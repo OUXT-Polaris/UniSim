@@ -10,11 +10,24 @@ jobs:
   build_and_test:
     name: Build
     runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        target_platform:
+          - StandaloneLinux64
+        unity_version:
+          - 2021.1.18f1
     steps:
     - uses: actions/checkout@v2-beta
+      with:
+        lfs: true
+    - uses: actions/cache@v2
+      with:
+        path: Library
+        key: Library-${{ matrix.projectPath }}-${{ matrix.target_platform }}
     - uses: game-ci/unity-builder@v2
       env:
         UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
       with:
-        targetPlatform: StandaloneLinux64
-        unityVersion: 2021.1.18f1
+        targetPlatform: ${{ matrix.target_platform }}
+        unityVersion: ${{ matrix.unity_version }}
